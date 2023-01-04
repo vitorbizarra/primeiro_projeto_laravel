@@ -54,6 +54,19 @@ class ContatoController extends Controller
         SiteContato::create($request->all());
         */
 
+        /*
+        Regras de validação de campos no formulário
+
+        $regras = [
+            'nome'                  => 'required|min:3|max:40',
+            'telefone'              => 'required',
+            'email'                 => 'required|email',
+            'mensagem'              => 'required|max:2000',
+            'motivo_contatos_id'    => 'required',
+        ];
+        */
+
+
         // Valida os dados do formulário
         $regras = [
             'nome'                  => 'required|min:3|max:40',
