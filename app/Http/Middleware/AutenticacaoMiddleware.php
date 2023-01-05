@@ -16,10 +16,12 @@ class AutenticacaoMiddleware
      */
     public function handle(Request $request, Closure $next, $metodo_autenticacao, $perfil)
     {
-        if ($metodo_autenticacao == 'padrao') {
-            return $next($request);
-        } else {
-            return Response("Acesso negado! Rota exige autenticação.");
+        session_start();
+
+        if (!isset($_SESSION['email']) || is_null($_SESSION['email'])) {
+            return redirect()->route('site.login', ['erro' => 2]);
         }
+
+        return $next($request);
     }
 }
