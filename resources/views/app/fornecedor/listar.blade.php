@@ -42,6 +42,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                {{ $fornecedores->appends($request)->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>
