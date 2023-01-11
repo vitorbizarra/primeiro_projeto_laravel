@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Fornecedor;
 use App\Models\Produto;
 use App\Models\Unidade;
 use App\Models\Item;
@@ -16,7 +17,7 @@ class ProdutoController extends Controller
      */
     public function index(Request $request)
     {
-        $produtos = Item::paginate(10);
+        $produtos = Item::with(['itemDetalhe', 'fornecedor'])->paginate(10);
 
         // // echo "<pre>";
         // foreach ($produtos as $key => $produto) {
@@ -45,7 +46,8 @@ class ProdutoController extends Controller
     public function create()
     {
         $unidades = Unidade::all();
-        return view('app.produto.create', ['unidades' => $unidades]);
+        $fornecedores = Fornecedor::all();
+        return view('app.produto.create', ['unidades' => $unidades, 'fornecedores' => $fornecedores]);
     }
 
     /**
@@ -74,21 +76,23 @@ class ProdutoController extends Controller
             'unidade_id' => [
                 'required',
                 'exists:unidades,id'
-            ]
+            ],
+            'fornecedor_id' => 'exists:fornecedores,id'
         ];
 
         $feedback = [
-            'required'          => 'O campo :attribute deve ser preenchido',
-            'nome'              => [
+            'required'              => 'O campo :attribute deve ser preenchido',
+            'nome'                  => [
                 'O campo nome deve ter no mínimo 3 caracteres',
                 'O campo nome deve ter no máximo 40 caracteres'
             ],
-            'descricao'         => [
+            'descricao'             => [
                 'O campo nome deve ter no mínimo 3 caracteres',
                 'O campo nome deve ter no máximo 2000 caracteres'
             ],
-            'peso.integer'      => 'O campo peso deve ser um número inteiro',
-            'unidade_id.exists' => 'A unidade de medida informada não existe'
+            'peso.integer'          => 'O campo peso deve ser um número inteiro',
+            'unidade_id.exists'     => 'A unidade de medida informada não existe',
+            'fornecedor_id.exists'  => 'Fornecedor não encontrado'
         ];
 
         $request->validate($regras_validacao, $feedback);
@@ -115,7 +119,7 @@ class ProdutoController extends Controller
      */
     public function edit(Produto $produto)
     {
-        return view('app.produto.edit', ['produto' => $produto, 'unidades' => Unidade::all()]);
+        return view('app.produto.edit', ['produto' => $produto, 'unidades' => Unidade::all(), 'fornecedores' => Fornecedor::all()]);
         // return view('app.produto.create', ['produto' => $produto, 'unidades' => Unidade::all()]);
     }
 
@@ -123,11 +127,49 @@ class ProdutoController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Produto  $produto
+     * @param  \App\Models\Item  $produto
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Produto $produto)
+    public function update(Request $request, Item $produto)
     {
+        $regras_validacao = [
+            'nome' => [
+                'required',
+                'min:3',
+                'max:40'
+            ],
+            'descricao' => [
+                'required',
+                'min:3',
+                'max:2000'
+            ],
+            'peso' => [
+                'required',
+                'integer'
+            ],
+            'unidade_id' => [
+                'required',
+                'exists:unidades,id'
+            ],
+            'fornecedor_id' => 'exists:fornecedores,id'
+        ];
+
+        $feedback = [
+            'required'              => 'O campo :attribute deve ser preenchido',
+            'nome'                  => [
+                'O campo nome deve ter no mínimo 3 caracteres',
+                'O campo nome deve ter no máximo 40 caracteres'
+            ],
+            'descricao'             => [
+                'O campo nome deve ter no mínimo 3 caracteres',
+                'O campo nome deve ter no máximo 2000 caracteres'
+            ],
+            'peso.integer'          => 'O campo peso deve ser um número inteiro',
+            'unidade_id.exists'     => 'A unidade de medida informada não existe',
+            'fornecedor_id.exists'  => 'Fornecedor não encontrado'
+        ];
+
+        $request->validate($regras_validacao, $feedback);
         $produto->update($request->all());
         return redirect()->route('produto.show', ['produto' => $produto->id]);
     }
