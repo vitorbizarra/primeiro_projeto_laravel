@@ -13,7 +13,7 @@ class Pedido extends Model
     {
         // return $this->belongsToMany(\App\Models\PedidoProduto::class, 'pedidos_produtos');
 
-        return $this->belongsToMany(\App\Models\Item::class, 'pedidos_produtos', 'pedido_id', 'produto_id')->withPivot('created_at', 'updated_at');
+        return $this->belongsToMany(\App\Models\Item::class, 'pedidos_produtos', 'pedido_id', 'produto_id')->withPivot('id', 'created_at', 'updated_at');
 
         /**
          * Parâmetros:

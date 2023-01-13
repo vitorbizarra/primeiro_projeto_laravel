@@ -25,13 +25,14 @@
                 @component('app.pedido_produto._components.form_create', ['pedido' => $pedido, 'produtos' => $produtos])
                 @endcomponent
                 @if ($pedido->produtos)
-                <h4>Itens do pedido</h4>
+                    <h4>Itens do pedido</h4>
                     <table border="1" width="100%">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Nome</th>
-                                <th>Data de Inclusão</th> 
+                                <th>Data de Inclusão</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -40,6 +41,15 @@
                                     <td>{{ $produto->id }}</td>
                                     <td>{{ $produto->nome }}</td>
                                     <td>{{ $produto->pivot->created_at->format('d/m/Y') }}</td>
+                                    <td>
+                                        <form id="form_{{ $produto->pivot->id }}" method="POST"
+                                            action="{{ route('pedido-produto.destroy', ['pedidoProduto' => $produto->pivot->id, 'pedido_id' => $pedido->id]) }}">
+                                            @method('DELETE')
+                                            @csrf
+                                            <a href="#"
+                                                onclick="document.getElementById('form_{{ $produto->pivot->id }}').submit()">Excluir</a>
+                                        </form>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

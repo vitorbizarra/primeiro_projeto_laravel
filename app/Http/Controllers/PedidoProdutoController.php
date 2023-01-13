@@ -111,11 +111,23 @@ class PedidoProdutoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\PedidoProduto  $pedidoProduto
+     * @param  integer $pedido_id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(PedidoProduto $pedidoProduto, $pedido_id)
     {
-        //
+        // Método convencional de exclusao
+        // PedidoProduto::where([
+        //     'pedido_id'  => $pedido->id,
+        //     'produto_id' => $produto->id
+        // ])->delete();
+
+        // Detach (delete pelo relacionamento)
+        // $pedido->produtos()->detach($produto->id);
+
+        $pedidoProduto->delete();
+
+        return redirect()->route('pedido-produto.create', ['pedido' => $pedido_id]);
     }
 }
